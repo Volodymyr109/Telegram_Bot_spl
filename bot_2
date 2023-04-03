@@ -1,0 +1,41 @@
+import Constants as keys
+import telebot
+from telebot import types
+
+bot = telebot.TeleBot(keys.API_KEY)
+
+
+@bot.message_handler(commands=['start'])
+def start_bot(message):
+    mess = f'Moin Wie gehts, <b>{message.from_user.first_name} {message.from_user.last_name}</b>!?'
+    bot.send_message(message.chat.id, mess, parse_mode='html')
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
+
+    start = types.KeyboardButton(f'/start')
+    help = types.KeyboardButton(f'/help')
+    end = types.KeyboardButton(f'/end')
+
+    markup.add(end, start, help)
+    bot.send_message(message.chat.id, 'Our Website or contacts', reply_markup=markup)
+
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Website:", url="https://account.jetbrains.com/licenses"))
+    bot.send_message(message.chat.id, 'Geh zum Site', reply_markup=markup)
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Social linl:", url="https://www.linkedin.com/feed/"))
+    bot.send_message(message.chat.id, 'Geh zum soc links', reply_markup=markup)
+
+
+@bot.message_handler(commands=['help'])
+def get_user_help(message):
+    bot.send_message(message.chat.id, 'If you need help - ask for it in Google!')
+
+
+@bot.message_handler(commands=['end'])
+def get_user_help(message):
+    bot.send_message(message.chat.id, 'Stop Bot, I need restart now cause you had stopped me')
+    bot.polling(none_stop=False)
+
+
+bot.polling(none_stop=True)
